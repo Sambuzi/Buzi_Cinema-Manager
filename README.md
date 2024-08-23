@@ -1,4 +1,4 @@
-istema di Gestione di Proiezioni Cinematografiche.
+Sistema di Gestione di Proiezioni Cinematografiche.
 
 Obiettivo del Progetto
 L’obiettivo del progetto è realizzare un sistema di supporto per un sito che funge da intermediario nella gestione delle proiezioni cinematografiche in un cinema. Il sistema permetterà agli utenti di registrarsi, visualizzare i film in programmazione, prenotare posti per le proiezioni e lasciare recensioni sui film e sulle proiezioni.

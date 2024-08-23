@@ -133,6 +133,8 @@ public class RegisterFrame extends JFrame {
                 dispose();
             }
         });
+
+        setLocationRelativeTo(null); // Centra la finestra sullo schermo
     }
 
     private void registerUser() {
@@ -162,3 +164,4 @@ public class RegisterFrame extends JFrame {
         }
     }
 }
+

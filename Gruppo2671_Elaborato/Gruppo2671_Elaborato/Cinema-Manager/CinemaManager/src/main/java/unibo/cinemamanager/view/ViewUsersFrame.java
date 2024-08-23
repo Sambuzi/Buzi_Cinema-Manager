@@ -41,6 +41,8 @@ public class ViewUsersFrame extends JFrame {
         });
 
         loadUsers();
+
+        setLocationRelativeTo(null); // Center the frame on the screen
     }
 
     private void loadUsers() {

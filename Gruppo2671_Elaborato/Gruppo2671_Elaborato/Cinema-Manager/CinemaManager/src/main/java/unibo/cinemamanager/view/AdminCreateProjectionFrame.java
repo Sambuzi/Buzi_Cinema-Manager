@@ -2,8 +2,10 @@ package unibo.cinemamanager.view;
 
 import unibo.cinemamanager.controller.MovieController;
 import unibo.cinemamanager.controller.ProjectionController;
+import unibo.cinemamanager.controller.HallController;
 import unibo.cinemamanager.Model.Movie;
 import unibo.cinemamanager.Model.Projection;
+import unibo.cinemamanager.Model.Hall;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +16,10 @@ import java.util.List;
 
 public class AdminCreateProjectionFrame extends JFrame {
     private JComboBox<String> movieComboBox;
+    private JComboBox<Hall> hallComboBox; // Nuovo JComboBox per le sale
     private JTextField projectionDateField;
     private JTextField projectionTimeField;
-    private JTextField hallField;
-    private JTextField availableSeatsField; // Nuovo campo
+    private JTextField availableSeatsField;
     private JButton saveButton;
 
     public AdminCreateProjectionFrame() {
@@ -56,15 +58,17 @@ public class AdminCreateProjectionFrame extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        panel.add(new JLabel("Hall:"), gbc);
-        hallField = new JTextField(20);
+        panel.add(new JLabel("Select Hall:"), gbc); // Cambiato il campo Hall
+        hallComboBox = new JComboBox<>();
+        loadHalls();
         gbc.gridx = 1;
-        panel.add(hallField, gbc);
+        panel.add(hallComboBox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        panel.add(new JLabel("Available Seats:"), gbc); // Nuova etichetta
-        availableSeatsField = new JTextField(20); // Nuovo campo
+        panel.add(new JLabel("Available Seats:"), gbc);
+        availableSeatsField = new JTextField(20);
+        availableSeatsField.setEditable(false); // Rende il campo non modificabile
         gbc.gridx = 1;
         panel.add(availableSeatsField, gbc);
 
@@ -75,6 +79,17 @@ public class AdminCreateProjectionFrame extends JFrame {
         panel.add(saveButton, gbc);
 
         add(panel);
+
+        // Aggiungi listener per aggiornare i posti disponibili in base alla sala selezionata
+        hallComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Hall selectedHall = (Hall) hallComboBox.getSelectedItem();
+                if (selectedHall != null) {
+                    availableSeatsField.setText(String.valueOf(selectedHall.getCapacity()));
+                }
+            }
+        });
 
         saveButton.addActionListener(new ActionListener() {
             @Override
@@ -96,20 +111,32 @@ public class AdminCreateProjectionFrame extends JFrame {
         }
     }
 
+    private void loadHalls() {
+        HallController hallController = new HallController();
+        try {
+            List<Hall> halls = hallController.getAllHalls();
+            for (Hall hall : halls) {
+                hallComboBox.addItem(hall);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading halls: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void saveProjection() {
         String selectedMovie = (String) movieComboBox.getSelectedItem();
         int movieId = Integer.parseInt(selectedMovie.split(":")[0].trim());
         String projectionDate = projectionDateField.getText();
         String projectionTime = projectionTimeField.getText();
-        String hall = hallField.getText();
-        int availableSeats = Integer.parseInt(availableSeatsField.getText()); // Nuovo campo
+        Hall selectedHall = (Hall) hallComboBox.getSelectedItem(); // Ottieni la sala selezionata
+        int availableSeats = Integer.parseInt(availableSeatsField.getText());
 
         Projection projection = new Projection();
         projection.setMovieId(movieId);
         projection.setProjectionDate(projectionDate);
         projection.setProjectionTime(projectionTime);
-        projection.setHall(hall);
-        projection.setAvailableSeats(availableSeats); // Nuovo campo
+        projection.setHall(selectedHall.getName()); // Usa il nome della sala selezionata
+        projection.setAvailableSeats(availableSeats);
 
         ProjectionController projectionController = new ProjectionController();
         try {

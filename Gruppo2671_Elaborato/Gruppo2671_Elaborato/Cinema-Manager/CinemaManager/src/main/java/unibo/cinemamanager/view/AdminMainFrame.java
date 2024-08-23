@@ -14,6 +14,7 @@ public class AdminMainFrame extends JFrame {
     private JButton viewMoviesButton;
     private JButton viewProjectionsButton;
     private JButton manageUsersButton;
+    private JButton createHallButton; // Pulsante per creare una nuova sala
     private JButton exitButton; // Pulsante per uscire
     private User admin;
 
@@ -53,11 +54,12 @@ public class AdminMainFrame extends JFrame {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(5, 1, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 10)); // Aggiornato per 6 righe
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         buttonPanel.setBackground(Color.WHITE);
 
         createMovieButton = new JButton("Create Movie");
+        createHallButton = new JButton("Create Hall"); // Pulsante per creare una nuova sala
         createProjectionButton = new JButton("Create Projection");
         viewMoviesButton = new JButton("View Movies");
         viewProjectionsButton = new JButton("View Projections");
@@ -66,11 +68,13 @@ public class AdminMainFrame extends JFrame {
         Font buttonFont = new Font("Arial", Font.PLAIN, 18);
         createMovieButton.setFont(buttonFont);
         createProjectionButton.setFont(buttonFont);
+        createHallButton.setFont(buttonFont); // Imposta il font per il pulsante createHallButton
         viewMoviesButton.setFont(buttonFont);
         viewProjectionsButton.setFont(buttonFont);
         manageUsersButton.setFont(buttonFont);
 
         buttonPanel.add(createMovieButton);
+        buttonPanel.add(createHallButton);
         buttonPanel.add(createProjectionButton);
         buttonPanel.add(viewMoviesButton);
         buttonPanel.add(viewProjectionsButton);
@@ -102,6 +106,13 @@ public class AdminMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new AdminCreateProjectionFrame().setVisible(true);
+            }
+        });
+
+        createHallButton.addActionListener(new ActionListener() { // Aggiunge l'azione per il pulsante createHallButton
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AdminCreateHallFrame().setVisible(true);
             }
         });
 

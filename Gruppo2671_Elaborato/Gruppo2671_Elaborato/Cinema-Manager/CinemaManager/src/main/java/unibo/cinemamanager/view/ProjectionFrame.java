@@ -2,13 +2,17 @@ package unibo.cinemamanager.view;
 
 import unibo.cinemamanager.controller.MovieController;
 import unibo.cinemamanager.controller.ProjectionController;
+import unibo.cinemamanager.controller.HallController; // Importa il controller Hall
 import unibo.cinemamanager.Model.Movie;
 import unibo.cinemamanager.Model.Projection;
+import unibo.cinemamanager.Model.Hall; // Importa il modello Hall
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +23,7 @@ public class ProjectionFrame extends JFrame {
     private DefaultTableModel tableModel;
     private JButton backButton;
     private UserMainFrame userMainFrame;
+    private JComboBox<Hall> hallComboBox; // ComboBox per le sale
 
     public ProjectionFrame(UserMainFrame userMainFrame) {
         this.userMainFrame = userMainFrame;
@@ -43,9 +48,16 @@ public class ProjectionFrame extends JFrame {
         // Barra degli strumenti
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
         backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.PLAIN, 14));
         toolBar.add(backButton);
+
+        hallComboBox = new JComboBox<>();
+        loadHalls();
+        toolBar.add(new JLabel("Filter by Hall:"));
+        toolBar.add(hallComboBox);
+
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
         // Colonne della tabella
@@ -68,40 +80,65 @@ public class ProjectionFrame extends JFrame {
         header.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // Recupera i dati delle proiezioni dal database e popolano la tabella
-        loadProjections();
+        loadProjections(null); // Carica tutte le proiezioni inizialmente
 
         JScrollPane scrollPane = new JScrollPane(projectionsTable);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Aggiungi azione al pulsante di aggiornamento
+        // Aggiungi azione al pulsante Back
         backButton.addActionListener(e -> {
             dispose();
             userMainFrame.setVisible(true);
         });
 
+        // Aggiungi listener per filtrare le proiezioni in base alla sala selezionata
+        hallComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Hall selectedHall = (Hall) hallComboBox.getSelectedItem();
+                loadProjections(selectedHall != null ? selectedHall.getName() : null);
+            }
+        });
+
         add(mainPanel);
     }
 
-    private void loadProjections() {
+    private void loadHalls() {
+        HallController hallController = new HallController();
+        try {
+            List<Hall> halls = hallController.getAllHalls();
+            hallComboBox.addItem(null); // Aggiungi un'opzione per mostrare tutte le proiezioni
+            for (Hall hall : halls) {
+                hallComboBox.addItem(hall);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading halls: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadProjections(String hallNameFilter) {
         ProjectionController projectionController = new ProjectionController();
         MovieController movieController = new MovieController();
         try {
             List<Projection> projections = projectionController.getAllProjections();
+            tableModel.setRowCount(0); // Pulisci la tabella
             Map<Integer, String> movieTitleMap = new HashMap<>();
             for (Projection projection : projections) {
-                if (!movieTitleMap.containsKey(projection.getMovieId())) {
-                    Movie movie = movieController.getMovieById(projection.getMovieId());
-                    if (movie != null) {
-                        movieTitleMap.put(projection.getMovieId(), movie.getTitle());
+                if (hallNameFilter == null || projection.getHall().equals(hallNameFilter)) {
+                    if (!movieTitleMap.containsKey(projection.getMovieId())) {
+                        Movie movie = movieController.getMovieById(projection.getMovieId());
+                        if (movie != null) {
+                            movieTitleMap.put(projection.getMovieId(), movie.getTitle());
+                        }
                     }
+                    String projectionDate = projection.getProjectionDate().split(" ")[0]; // Solo la data
+                    tableModel.addRow(new Object[]{
+                            movieTitleMap.get(projection.getMovieId()),
+                            projectionDate,
+                            projection.getProjectionTime(),
+                            projection.getHall()
+                    });
                 }
-                String projectionDate = projection.getProjectionDate().split(" ")[0]; // Solo la data
-                tableModel.addRow(new Object[]{
-                        movieTitleMap.get(projection.getMovieId()),
-                        projectionDate,
-                        projection.getProjectionTime(),
-                        projection.getHall()
-                });
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error loading projections: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

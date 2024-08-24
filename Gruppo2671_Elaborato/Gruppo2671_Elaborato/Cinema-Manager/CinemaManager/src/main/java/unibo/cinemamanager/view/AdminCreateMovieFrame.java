@@ -9,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+/**
+ * AdminCreateMovieFrame class for creating a new movie.
+ */
 public class AdminCreateMovieFrame extends JFrame {
     private JTextField titleField;
     private JTextField descriptionField;
@@ -17,6 +20,10 @@ public class AdminCreateMovieFrame extends JFrame {
     private JTextField durationField;
     private JButton saveButton;
 
+    /**
+     * Constructor for AdminCreateMovieFrame.
+     * Initializes the frame and its components.
+     */
     public AdminCreateMovieFrame() {
         setTitle("Create Movie");
         setSize(400, 300);
@@ -79,6 +86,11 @@ public class AdminCreateMovieFrame extends JFrame {
         });
     }
 
+    /**
+     * Saves the movie with the details provided in the text fields.
+     * Displays a success message if the movie is created successfully,
+     * otherwise displays an error message.
+     */
     private void saveMovie() {
         String title = titleField.getText();
         String description = descriptionField.getText();

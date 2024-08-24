@@ -3,16 +3,36 @@ package unibo.cinemamanager.controller;
 import unibo.cinemamanager.Model.Projection;
 import unibo.cinemamanager.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectionController {
+/**
+ * Controller class for managing projections.
+ */
+public final class ProjectionController {
+
+    private static final int MOVIE_ID_INDEX = 1;
+    private static final int PROJECTION_DATE_INDEX = 2;
+    private static final int PROJECTION_TIME_INDEX = 3;
+    private static final int HALL_INDEX = 4;
+    private static final int AVAILABLE_SEATS_INDEX = 5;
+    private static final int PROJECTION_ID_INDEX = 6;
+
+    /**
+     * Retrieves all projections from the database.
+     *
+     * @return a list of all projections
+     * @throws SQLException if a database access error occurs
+     */
     public List<Projection> getAllProjections() throws SQLException {
         List<Projection> projections = new ArrayList<>();
-        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, p.hall, p.available_seats " +
-                       "FROM projections p " +
-                       "JOIN movies m ON p.movie_id = m.id";
+        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, "
+                     + "p.hall, p.available_seats FROM projections p "
+                     + "JOIN movies m ON p.movie_id = m.id";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
@@ -24,41 +44,61 @@ public class ProjectionController {
                 projection.setProjectionDate(rs.getString("projection_date"));
                 projection.setProjectionTime(rs.getString("projection_time"));
                 projection.setHall(rs.getString("hall"));
-                projection.setAvailableSeats(rs.getInt("available_seats")); // Nuovo campo
+                projection.setAvailableSeats(rs.getInt("available_seats"));
                 projections.add(projection);
             }
         }
         return projections;
     }
 
-    public void createProjection(Projection projection) throws SQLException {
-        String query = "INSERT INTO projections (movie_id, projection_date, projection_time, hall, available_seats) VALUES (?, ?, ?, ?, ?)";
+    /**
+     * Creates a new projection in the database.
+     *
+     * @param projection the projection to create
+     * @throws SQLException if a database access error occurs
+     */
+    public void createProjection(final Projection projection) throws SQLException {
+        String query = "INSERT INTO projections (movie_id, projection_date, projection_time, "
+                     + "hall, available_seats) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, projection.getMovieId());
-            stmt.setString(2, projection.getProjectionDate());
-            stmt.setString(3, projection.getProjectionTime());
-            stmt.setString(4, projection.getHall());
-            stmt.setInt(5, projection.getAvailableSeats()); // Nuovo campo
+            stmt.setInt(MOVIE_ID_INDEX, projection.getMovieId());
+            stmt.setString(PROJECTION_DATE_INDEX, projection.getProjectionDate());
+            stmt.setString(PROJECTION_TIME_INDEX, projection.getProjectionTime());
+            stmt.setString(HALL_INDEX, projection.getHall());
+            stmt.setInt(AVAILABLE_SEATS_INDEX, projection.getAvailableSeats());
             stmt.executeUpdate();
         }
     }
 
-    public void updateProjection(Projection projection) throws SQLException {
-        String query = "UPDATE projections SET movie_id = ?, projection_date = ?, projection_time = ?, hall = ?, available_seats = ? WHERE id = ?";
+    /**
+     * Updates an existing projection in the database.
+     *
+     * @param projection the projection to update
+     * @throws SQLException if a database access error occurs
+     */
+    public void updateProjection(final Projection projection) throws SQLException {
+        String query = "UPDATE projections SET movie_id = ?, projection_date = ?, projection_time = ?, "
+                     + "hall = ?, available_seats = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, projection.getMovieId());
-            stmt.setString(2, projection.getProjectionDate());
-            stmt.setString(3, projection.getProjectionTime());
-            stmt.setString(4, projection.getHall());
-            stmt.setInt(5, projection.getAvailableSeats()); // Nuovo campo
-            stmt.setInt(6, projection.getId());
+            stmt.setInt(MOVIE_ID_INDEX, projection.getMovieId());
+            stmt.setString(PROJECTION_DATE_INDEX, projection.getProjectionDate());
+            stmt.setString(PROJECTION_TIME_INDEX, projection.getProjectionTime());
+            stmt.setString(HALL_INDEX, projection.getHall());
+            stmt.setInt(AVAILABLE_SEATS_INDEX, projection.getAvailableSeats());
+            stmt.setInt(PROJECTION_ID_INDEX, projection.getId());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteProjection(int projectionId) throws SQLException {
+    /**
+     * Deletes a projection from the database.
+     *
+     * @param projectionId the ID of the projection to delete
+     * @throws SQLException if a database access error occurs
+     */
+    public void deleteProjection(final int projectionId) throws SQLException {
         String query = "DELETE FROM projections WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -67,12 +107,18 @@ public class ProjectionController {
         }
     }
 
-    public Projection getProjectionById(int projectionId) throws SQLException {
+    /**
+     * Retrieves a projection by its ID.
+     *
+     * @param projectionId the ID of the projection to retrieve
+     * @return the projection with the specified ID
+     * @throws SQLException if a database access error occurs
+     */
+    public Projection getProjectionById(final int projectionId) throws SQLException {
         Projection projection = new Projection();
-        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, p.hall, p.available_seats " +
-                       "FROM projections p " +
-                       "JOIN movies m ON p.movie_id = m.id " +
-                       "WHERE p.id = ?";
+        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, "
+                     + "p.hall, p.available_seats FROM projections p "
+                     + "JOIN movies m ON p.movie_id = m.id WHERE p.id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, projectionId);
@@ -84,14 +130,21 @@ public class ProjectionController {
                     projection.setProjectionDate(rs.getString("projection_date"));
                     projection.setProjectionTime(rs.getString("projection_time"));
                     projection.setHall(rs.getString("hall"));
-                    projection.setAvailableSeats(rs.getInt("available_seats")); // Nuovo campo
+                    projection.setAvailableSeats(rs.getInt("available_seats"));
                 }
             }
         }
         return projection;
     }
 
-    public void updateAvailableSeats(int projectionId, int seatsToBook) throws SQLException {
+    /**
+     * Updates the available seats for a projection.
+     *
+     * @param projectionId the ID of the projection to update
+     * @param seatsToBook  the number of seats to book
+     * @throws SQLException if a database access error occurs
+     */
+    public void updateAvailableSeats(final int projectionId, final int seatsToBook) throws SQLException {
         String query = "UPDATE projections SET available_seats = available_seats - ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -101,12 +154,18 @@ public class ProjectionController {
         }
     }
 
-    public List<Projection> getProjectionsByMovieId(int movieId) throws SQLException {
+    /**
+     * Retrieves all projections for a specific movie by movie ID.
+     *
+     * @param movieId the ID of the movie
+     * @return a list of projections for the specified movie
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Projection> getProjectionsByMovieId(final int movieId) throws SQLException {
         List<Projection> projections = new ArrayList<>();
-        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, p.hall, p.available_seats " +
-                       "FROM projections p " +
-                       "JOIN movies m ON p.movie_id = m.id " +
-                       "WHERE p.movie_id = ?";
+        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, "
+                     + "p.hall, p.available_seats FROM projections p "
+                     + "JOIN movies m ON p.movie_id = m.id WHERE p.movie_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, movieId);
@@ -119,7 +178,7 @@ public class ProjectionController {
                     projection.setProjectionDate(rs.getString("projection_date"));
                     projection.setProjectionTime(rs.getString("projection_time"));
                     projection.setHall(rs.getString("hall"));
-                    projection.setAvailableSeats(rs.getInt("available_seats")); // Nuovo campo
+                    projection.setAvailableSeats(rs.getInt("available_seats"));
                     projections.add(projection);
                 }
             }
@@ -127,12 +186,18 @@ public class ProjectionController {
         return projections;
     }
 
-    public List<Projection> getProjectionsByDate(String date) throws SQLException {
+    /**
+     * Retrieves all projections for a specific date.
+     *
+     * @param date the date of the projections
+     * @return a list of projections for the specified date
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Projection> getProjectionsByDate(final String date) throws SQLException {
         List<Projection> projections = new ArrayList<>();
-        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, p.hall, p.available_seats " +
-                       "FROM projections p " +
-                       "JOIN movies m ON p.movie_id = m.id " +
-                       "WHERE p.projection_date = ?";
+        String query = "SELECT p.id, p.movie_id, m.title, p.projection_date, p.projection_time, "
+                     + "p.hall, p.available_seats FROM projections p "
+                     + "JOIN movies m ON p.movie_id = m.id WHERE p.projection_date = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, date);
@@ -145,7 +210,7 @@ public class ProjectionController {
                     projection.setProjectionDate(rs.getString("projection_date"));
                     projection.setProjectionTime(rs.getString("projection_time"));
                     projection.setHall(rs.getString("hall"));
-                    projection.setAvailableSeats(rs.getInt("available_seats")); // Nuovo campo
+                    projection.setAvailableSeats(rs.getInt("available_seats"));
                     projections.add(projection);
                 }
             }

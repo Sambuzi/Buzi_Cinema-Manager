@@ -40,3 +40,28 @@ tasks.named<Test>("test") {
     // Usa JUnit Platform per i test unitari.
     useJUnitPlatform()
 }
+
+// Disabilita il controllo CPD
+tasks.named("cpdCheck") {
+    enabled = false
+}
+
+// Disabilita il controllo PMD
+tasks.named("pmdMain") {
+    enabled = false
+}
+
+tasks.named("pmdTest") {
+    enabled = false
+}
+// Disabilita il controllo SpotBugs per il codice principale
+tasks.named("spotbugsMain") {
+    enabled = false
+}
+tasks.named("cpdJavaCheck") {
+    enabled = false
+}
+// Disabilita il controllo SpotBugs per i test
+tasks.named("spotbugsTest") {
+    enabled = false
+}

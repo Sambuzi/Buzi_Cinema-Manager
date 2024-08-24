@@ -3,12 +3,29 @@ package unibo.cinemamanager.controller;
 import unibo.cinemamanager.Model.Movie;
 import unibo.cinemamanager.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieController {
-    public void createMovie(Movie movie) throws SQLException {
+/**
+ * The MovieController class handles operations related to movies in the cinema manager application.
+ */
+public final class MovieController {
+
+    private static final int MOVIE_DURATION_INDEX = 5;
+    private static final int MOVIE_ID_INDEX = 6;
+
+    /**
+     * Creates a new movie in the database.
+     *
+     * @param movie the movie to be created
+     * @throws SQLException if a database access error occurs
+     */
+    public void createMovie(final Movie movie) throws SQLException {
         String query = "INSERT INTO movies (title, description, release_date, genre, duration) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -16,11 +33,17 @@ public class MovieController {
             stmt.setString(2, movie.getDescription());
             stmt.setString(3, movie.getReleaseDate());
             stmt.setString(4, movie.getGenre());
-            stmt.setInt(5, movie.getDuration());
+            stmt.setInt(MOVIE_DURATION_INDEX, movie.getDuration());
             stmt.executeUpdate();
         }
     }
 
+    /**
+     * Retrieves all movies from the database.
+     *
+     * @return a list of all movies
+     * @throws SQLException if a database access error occurs
+     */
     public List<Movie> getAllMovies() throws SQLException {
         List<Movie> movies = new ArrayList<>();
         String query = "SELECT * FROM movies";
@@ -41,9 +64,14 @@ public class MovieController {
         return movies;
     }
 
-    // Aggiungi altri metodi come getMovieById, updateMovie, deleteMovie, etc.
-
-    public Movie getMovieById(int id) throws SQLException {
+    /**
+     * Retrieves a movie by its ID.
+     *
+     * @param id the ID of the movie to retrieve
+     * @return the movie with the specified ID, or null if not found
+     * @throws SQLException if a database access error occurs
+     */
+    public Movie getMovieById(final int id) throws SQLException {
         String query = "SELECT * FROM movies WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -64,7 +92,13 @@ public class MovieController {
         return null;
     }
 
-    public void updateMovie(Movie movie) throws SQLException {
+    /**
+     * Updates an existing movie in the database.
+     *
+     * @param movie the movie to update
+     * @throws SQLException if a database access error occurs
+     */
+    public void updateMovie(final Movie movie) throws SQLException {
         String query = "UPDATE movies SET title = ?, description = ?, release_date = ?, genre = ?, duration = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -72,13 +106,19 @@ public class MovieController {
             stmt.setString(2, movie.getDescription());
             stmt.setString(3, movie.getReleaseDate());
             stmt.setString(4, movie.getGenre());
-            stmt.setInt(5, movie.getDuration());
-            stmt.setInt(6, movie.getId());
+            stmt.setInt(MOVIE_DURATION_INDEX, movie.getDuration());
+            stmt.setInt(MOVIE_ID_INDEX, movie.getId());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteMovie(int id) throws SQLException {
+    /**
+     * Deletes a movie from the database by its ID.
+     *
+     * @param id the ID of the movie to delete
+     * @throws SQLException if a database access error occurs
+     */
+    public void deleteMovie(final int id) throws SQLException {
         String query = "DELETE FROM movies WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -87,7 +127,15 @@ public class MovieController {
         }
     }
 
-    public List<Movie> searchMovies(String title, String genre) throws SQLException {
+    /**
+     * Searches for movies by title and genre.
+     *
+     * @param title the title to search for
+     * @param genre the genre to search for
+     * @return a list of movies matching the search criteria
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Movie> searchMovies(final String title, final String genre) throws SQLException {
         List<Movie> movies = new ArrayList<>();
         String query = "SELECT * FROM movies WHERE title LIKE ? AND genre LIKE ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -110,7 +158,14 @@ public class MovieController {
         return movies;
     }
 
-    public List<Movie> getMoviesByGenre(String genre) throws SQLException {
+    /**
+     * Retrieves movies by genre.
+     *
+     * @param genre the genre to filter by
+     * @return a list of movies with the specified genre
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Movie> getMoviesByGenre(final String genre) throws SQLException {
         List<Movie> movies = new ArrayList<>();
         String query = "SELECT * FROM movies WHERE genre = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -132,7 +187,14 @@ public class MovieController {
         return movies;
     }
 
-    public List<Movie> getMoviesByDuration(int duration) throws SQLException {
+    /**
+     * Retrieves movies by their duration.
+     *
+     * @param duration the duration to filter by
+     * @return a list of movies with the specified duration
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Movie> getMoviesByDuration(final int duration) throws SQLException {
         List<Movie> movies = new ArrayList<>();
         String query = "SELECT * FROM movies WHERE duration = ?";
         try (Connection conn = DatabaseConnection.getConnection();

@@ -3,24 +3,41 @@ package unibo.cinemamanager.view;
 import unibo.cinemamanager.controller.UserController;
 import unibo.cinemamanager.Model.User;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * The ViewUsersFrame class displays a table of registered users and allows navigation back to the RegisterFrame.
+ */
 public class ViewUsersFrame extends JFrame {
+
+    private static final int FRAME_WIDTH = 600;
+    private static final int FRAME_HEIGHT = 400; 
     private JTable usersTable;
     private JButton backButton;
-    private RegisterFrame registerFrame; // Declare a reference to the RegisterFrame
+    private final RegisterFrame registerFrame;
 
-    public ViewUsersFrame(RegisterFrame registerFrame) {
-        this.registerFrame = registerFrame; // Initialize the reference
+    /**
+     * Constructor for the ViewUsersFrame.
+     *
+     * @param registerFrame the frame to return to when the back button is pressed
+     */
+    public ViewUsersFrame(final RegisterFrame registerFrame) {
+        this.registerFrame = registerFrame;
 
         setTitle("Registered Users");
-        setSize(600, 400);
+        setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -34,17 +51,20 @@ public class ViewUsersFrame extends JFrame {
 
         backButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                registerFrame.setVisible(true); // Show the RegisterFrame
-                dispose(); // Close the current frame
+            public void actionPerformed(final ActionEvent e) {
+                registerFrame.setVisible(true);
+                dispose();
             }
         });
 
         loadUsers();
 
-        setLocationRelativeTo(null); // Center the frame on the screen
+        setLocationRelativeTo(null);
     }
 
+    /**
+     * Loads the list of users from the database and displays them in the table.
+     */
     private void loadUsers() {
         UserController userController = new UserController();
         try {

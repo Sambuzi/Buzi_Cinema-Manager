@@ -1,29 +1,60 @@
 package unibo.cinemamanager.controller;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import unibo.cinemamanager.DatabaseConnection;
 import unibo.cinemamanager.Model.User;
 
+/**
+ * UserController is responsible for handling user-related operations,
+ * such as registering users, retrieving user information, updating and deleting users.
+ */
 public class UserController {
-    public void registerUser(User user) throws SQLException {
-        String query = "INSERT INTO users (first_name, last_name, email, password, preferred_genres, priority_level, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    private static final int FIRST_NAME_INDEX = 1;
+    private static final int LAST_NAME_INDEX = 2;
+    private static final int EMAIL_INDEX = 3;
+    private static final int PASSWORD_INDEX = 4;
+    private static final int PREFERRED_GENRES_INDEX = 5;
+    private static final int PRIORITY_LEVEL_INDEX = 6;
+    private static final int USER_TYPE_INDEX = 7;
+    private static final int ID_INDEX = 7; // For update query
+
+    /**
+     * Registers a new user in the database.
+     *
+     * @param user the User object containing user information
+     * @throws SQLException if any SQL error occurs
+     */
+    public void registerUser(final User user) throws SQLException {
+        String query = "INSERT INTO users (first_name, last_name, email, password, "
+                     + "preferred_genres, priority_level, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, user.getFirstName());
-            stmt.setString(2, user.getLastName());
-            stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPassword());
-            stmt.setString(5, user.getPreferredGenres());
-            stmt.setInt(6, user.getPriorityLevel());
-            stmt.setString(7, user.getUserType());
+            stmt.setString(FIRST_NAME_INDEX, user.getFirstName());
+            stmt.setString(LAST_NAME_INDEX, user.getLastName());
+            stmt.setString(EMAIL_INDEX, user.getEmail());
+            stmt.setString(PASSWORD_INDEX, user.getPassword());
+            stmt.setString(PREFERRED_GENRES_INDEX, user.getPreferredGenres());
+            stmt.setInt(PRIORITY_LEVEL_INDEX, user.getPriorityLevel());
+            stmt.setString(USER_TYPE_INDEX, user.getUserType());
             stmt.executeUpdate();
         }
     }
 
-    public User getUserByEmail(String email) throws SQLException {
+    /**
+     * Retrieves a user from the database by their email.
+     *
+     * @param email the email of the user to be retrieved
+     * @return a User object if found, null otherwise
+     * @throws SQLException if any SQL error occurs
+     */
+    public User getUserByEmail(final String email) throws SQLException {
         String query = "SELECT * FROM users WHERE email = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -45,6 +76,12 @@ public class UserController {
         return null;
     }
 
+    /**
+     * Retrieves all users from the database.
+     *
+     * @return a list of User objects
+     * @throws SQLException if any SQL error occurs
+     */
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM users";
@@ -67,22 +104,35 @@ public class UserController {
         return users;
     }
 
-    public void updateUser(User user) throws SQLException {
-        String query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, preferred_genres = ?, priority_level = ?, user_type = ? WHERE id = ?";
+    /**
+     * Updates the information of an existing user.
+     *
+     * @param user the User object containing updated user information
+     * @throws SQLException if any SQL error occurs
+     */
+    public void updateUser(final User user) throws SQLException {
+        String query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, "
+                     + "preferred_genres = ?, priority_level = ?, user_type = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, user.getFirstName());
-            stmt.setString(2, user.getLastName());
-            stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPreferredGenres());
-            stmt.setInt(5, user.getPriorityLevel());
-            stmt.setString(6, user.getUserType());
-            stmt.setInt(7, user.getId());
+            stmt.setString(FIRST_NAME_INDEX, user.getFirstName());
+            stmt.setString(LAST_NAME_INDEX, user.getLastName());
+            stmt.setString(EMAIL_INDEX, user.getEmail());
+            stmt.setString(PREFERRED_GENRES_INDEX, user.getPreferredGenres());
+            stmt.setInt(PRIORITY_LEVEL_INDEX, user.getPriorityLevel());
+            stmt.setString(USER_TYPE_INDEX, user.getUserType());
+            stmt.setInt(ID_INDEX, user.getId());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteUser(int id) throws SQLException {
+    /**
+     * Deletes a user from the database.
+     *
+     * @param id the ID of the user to be deleted
+     * @throws SQLException if any SQL error occurs
+     */
+    public void deleteUser(final int id) throws SQLException {
         String query = "DELETE FROM users WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

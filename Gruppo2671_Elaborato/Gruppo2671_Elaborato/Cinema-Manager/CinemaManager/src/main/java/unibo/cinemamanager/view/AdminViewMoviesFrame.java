@@ -3,26 +3,50 @@ package unibo.cinemamanager.view;
 import unibo.cinemamanager.controller.MovieController;
 import unibo.cinemamanager.Model.Movie;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import java.awt.*;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Frame per visualizzare la lista dei film.
+ */
 public class AdminViewMoviesFrame extends JFrame {
+
+    private static final int FRAME_WIDTH = 800;
+    private static final int FRAME_HEIGHT = 600;
+    private static final int ROW_HEIGHT = 30;
+    private static final int HEADER_FONT_SIZE = 14;
+    private static final int HEADER_BACKGROUND_RED = 70;
+    private static final int HEADER_BACKGROUND_GREEN = 130;
+    private static final int HEADER_BACKGROUND_BLUE = 180;
+
     private JTable moviesTable;
     private DefaultTableModel tableModel;
-    private JButton backButton; // Dichiarazione del pulsante Back
-    private AdminMainFrame adminMainFrame; // Riferimento a AdminMainFrame
+    private JButton backButton;
+    private final AdminMainFrame adminMainFrame;
 
-    public AdminViewMoviesFrame(AdminMainFrame adminMainFrame) {
-        this.adminMainFrame = adminMainFrame; // Inizializzazione di AdminMainFrame
+    /**
+     * Costruttore per inizializzare il frame AdminViewMoviesFrame.
+     *
+     * @param adminMainFrame riferimento al frame principale dell'admin
+     */
+    public AdminViewMoviesFrame(final AdminMainFrame adminMainFrame) {
+        this.adminMainFrame = adminMainFrame;
 
         setTitle("View Movies");
-        setSize(800, 600);
+        setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -34,16 +58,16 @@ public class AdminViewMoviesFrame extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         // Colonne della tabella
-        String[] columnNames = {"ID", "Title", "Description", "Release Date", "Genere", "Duration"};
+        String[] columnNames = {"ID", "Title", "Description", "Release Date", "Genre", "Duration"};
         tableModel = new DefaultTableModel(columnNames, 0);
         moviesTable = new JTable(tableModel);
         moviesTable.setFillsViewportHeight(true);
-        moviesTable.setRowHeight(30);
+        moviesTable.setRowHeight(ROW_HEIGHT);
 
         // Personalizza l'intestazione della tabella
         JTableHeader header = moviesTable.getTableHeader();
-        header.setFont(new Font("Arial", Font.BOLD, 14));
-        header.setBackground(new Color(70, 130, 180));
+        header.setFont(new Font("Arial", Font.BOLD, HEADER_FONT_SIZE));
+        header.setBackground(new Color(HEADER_BACKGROUND_RED, HEADER_BACKGROUND_GREEN, HEADER_BACKGROUND_BLUE));
         header.setForeground(Color.BLACK);
 
         // Recupera i dati dei film dal database e popolano la tabella
@@ -55,13 +79,16 @@ public class AdminViewMoviesFrame extends JFrame {
         // Aggiungi azione al pulsante Back
         backButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Chiudi il frame corrente
-                adminMainFrame.setVisible(true); // Torna a AdminMainFrame
+            public void actionPerformed(final ActionEvent e) {
+                dispose();
+                adminMainFrame.setVisible(true);
             }
         });
     }
 
+    /**
+     * Carica i film dal database e popola la tabella.
+     */
     private void loadMovies() {
         MovieController movieController = new MovieController();
         try {

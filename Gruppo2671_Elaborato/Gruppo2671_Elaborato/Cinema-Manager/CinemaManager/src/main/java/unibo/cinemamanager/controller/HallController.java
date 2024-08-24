@@ -3,14 +3,26 @@ package unibo.cinemamanager.controller;
 import unibo.cinemamanager.Model.Hall;
 import unibo.cinemamanager.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller class for managing Halls in the Cinema Manager application.
+ */
 public class HallController {
 
-    // Metodo per creare una nuova sala
-    public void createHall(Hall hall) throws SQLException {
+    /**
+     * Creates a new hall in the database.
+     *
+     * @param hall the Hall object containing hall details
+     * @throws SQLException if a database access error occurs
+     */
+    public void createHall(final Hall hall) throws SQLException {
         String query = "INSERT INTO hall (name, capacity) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -20,7 +32,12 @@ public class HallController {
         }
     }
 
-    // Metodo per ottenere tutte le sale
+    /**
+     * Retrieves all halls from the database.
+     *
+     * @return a list of Hall objects
+     * @throws SQLException if a database access error occurs
+     */
     public List<Hall> getAllHalls() throws SQLException {
         List<Hall> halls = new ArrayList<>();
         String query = "SELECT * FROM hall";
@@ -38,8 +55,14 @@ public class HallController {
         return halls;
     }
 
-    // Metodo per ottenere una sala per ID
-    public Hall getHallById(int id) throws SQLException {
+    /**
+     * Retrieves a hall by its ID.
+     *
+     * @param id the ID of the hall
+     * @return the Hall object if found, otherwise null
+     * @throws SQLException if a database access error occurs
+     */
+    public Hall getHallById(final int id) throws SQLException {
         String query = "SELECT * FROM hall WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -57,8 +80,13 @@ public class HallController {
         return null;
     }
 
-    // Metodo per aggiornare una sala esistente
-    public void updateHall(Hall hall) throws SQLException {
+    /**
+     * Updates an existing hall in the database.
+     *
+     * @param hall the Hall object containing updated details
+     * @throws SQLException if a database access error occurs
+     */
+    public void updateHall(final Hall hall) throws SQLException {
         String query = "UPDATE hall SET name = ?, capacity = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -69,8 +97,13 @@ public class HallController {
         }
     }
 
-    // Metodo per eliminare una sala
-    public void deleteHall(int id) throws SQLException {
+    /**
+     * Deletes a hall from the database.
+     *
+     * @param id the ID of the hall to delete
+     * @throws SQLException if a database access error occurs
+     */
+    public void deleteHall(final int id) throws SQLException {
         String query = "DELETE FROM hall WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -79,8 +112,14 @@ public class HallController {
         }
     }
 
-    // Metodo per cercare sale per nome
-    public List<Hall> searchHalls(String name) throws SQLException {
+    /**
+     * Searches halls by name.
+     *
+     * @param name the name to search for
+     * @return a list of Hall objects matching the search criteria
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Hall> searchHalls(final String name) throws SQLException {
         List<Hall> halls = new ArrayList<>();
         String query = "SELECT * FROM hall WHERE name LIKE ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -99,8 +138,14 @@ public class HallController {
         return halls;
     }
 
-    // Metodo per ottenere sale per capacità
-    public List<Hall> getHallsByCapacity(int capacity) throws SQLException {
+    /**
+     * Retrieves halls by capacity.
+     *
+     * @param capacity the capacity to filter by
+     * @return a list of Hall objects with the specified capacity
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Hall> getHallsByCapacity(final int capacity) throws SQLException {
         List<Hall> halls = new ArrayList<>();
         String query = "SELECT * FROM hall WHERE capacity = ?";
         try (Connection conn = DatabaseConnection.getConnection();

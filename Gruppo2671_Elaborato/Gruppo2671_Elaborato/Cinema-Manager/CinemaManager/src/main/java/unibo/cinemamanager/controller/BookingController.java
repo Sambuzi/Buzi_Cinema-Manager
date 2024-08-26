@@ -86,4 +86,26 @@ public class BookingController {
         }
         return bookings;
     }
+    /**
+     * Retrieves the number of bookings made for a specific projection.
+     *
+     * @param id the ID of the projection
+     * @return the number of bookings made for the projection
+     */
+    public int getBookingsCountByProjectionId(int id) {
+        int count = 0;
+        String query = "SELECT COUNT(*) as count FROM bookings WHERE projection_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt("count");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

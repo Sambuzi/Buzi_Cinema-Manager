@@ -171,9 +171,13 @@ public class WelcomeFrame extends JFrame {
         try {
             User user = userController.getUserByEmail(email);
             if (user != null && user.getPassword().equals(password) && "Admin".equals(user.getUserType())) {
-                JOptionPane.showMessageDialog(this, "Admin access successful.");
-                dispose();
-                new AdminMainFrame(user).setVisible(true);
+                if (user.isBlocked()) {
+                    JOptionPane.showMessageDialog(this, "Your account is blocked. Please contact support.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Admin access successful.");
+                    dispose();
+                    new AdminMainFrame(user).setVisible(true);
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Admin credentials.");
             }
@@ -183,25 +187,31 @@ public class WelcomeFrame extends JFrame {
     }
 
     /**
-     * Displays the user login dialog.
-     */
-    private void showUserLogin() {
-        String email = JOptionPane.showInputDialog(this, "Enter User Email:");
-        String password = JOptionPane.showInputDialog(this, "Enter User Password:");
-        UserController userController = new UserController();
-        try {
-            User user = userController.getUserByEmail(email);
-            if (user != null && user.getPassword().equals(password) && "User".equals(user.getUserType())) {
+ * Displays the user login dialog.
+ */
+private void showUserLogin() {
+    String email = JOptionPane.showInputDialog(this, "Enter User Email:");
+    String password = JOptionPane.showInputDialog(this, "Enter User Password:");
+    UserController userController = new UserController();
+    try {
+        User user = userController.getUserByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            if ("blocked".equals(user.getUserType())) {
+                JOptionPane.showMessageDialog(this, "Your account is blocked. Please contact support.");
+            } else if ("User".equals(user.getUserType())) {
                 JOptionPane.showMessageDialog(this, "User access successful.");
                 dispose();
-                new UserMainFrame(user.getId(), user.getFirstName()).setVisible(true); 
+                new UserMainFrame(user.getId(), user.getFirstName()).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid User credentials.");
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error accessing user data: " + e.getMessage());
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid User credentials.");
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error accessing user data: " + e.getMessage());
     }
+}
 
     /**
      * Displays the registration frame for new users.

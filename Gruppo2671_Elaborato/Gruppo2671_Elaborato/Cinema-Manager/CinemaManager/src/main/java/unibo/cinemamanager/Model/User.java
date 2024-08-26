@@ -158,4 +158,9 @@ public final class User {
     public void setUserType(final String userType) {
         this.userType = userType;
     }
+
+    public boolean isBlocked() {
+        return "blocked".equals(userType);
+    }
+    
 }

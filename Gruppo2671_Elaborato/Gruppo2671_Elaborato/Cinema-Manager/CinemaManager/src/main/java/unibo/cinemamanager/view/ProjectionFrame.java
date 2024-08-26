@@ -3,6 +3,7 @@ package unibo.cinemamanager.view;
 import unibo.cinemamanager.controller.MovieController;
 import unibo.cinemamanager.controller.ProjectionController;
 import unibo.cinemamanager.controller.HallController;
+import unibo.cinemamanager.controller.BookingController;
 import unibo.cinemamanager.Model.Movie;
 import unibo.cinemamanager.Model.Projection;
 import unibo.cinemamanager.Model.Hall;
@@ -90,7 +91,7 @@ public class ProjectionFrame extends JFrame {
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
         // Table columns
-        String[] columnNames = {"Movie Title", "Projection Date", "Projection Time", "Hall"};
+        String[] columnNames = {"Movie Title", "Projection Date", "Projection Time", "Hall", "Bookings"};
         tableModel = new DefaultTableModel(columnNames, 0);
         projectionsTable = new JTable(tableModel);
         projectionsTable.setFillsViewportHeight(true);
@@ -156,6 +157,7 @@ public class ProjectionFrame extends JFrame {
     private void loadProjections(final String hallNameFilter) {
         ProjectionController projectionController = new ProjectionController();
         MovieController movieController = new MovieController();
+        BookingController bookingController = new BookingController();
         try {
             List<Projection> projections = projectionController.getAllProjections();
             tableModel.setRowCount(0); // Clear table
@@ -169,11 +171,13 @@ public class ProjectionFrame extends JFrame {
                         }
                     }
                     String projectionDate = projection.getProjectionDate().split(" ")[0]; // Only the date
+                    int bookingsCount = bookingController.getBookingsCountByProjectionId(projection.getId());
                     tableModel.addRow(new Object[]{
                         movieTitleMap.get(projection.getMovieId()),
                         projectionDate,
                         projection.getProjectionTime(),
-                        projection.getHall()
+                        projection.getHall(),
+                        bookingsCount
                     });
                 }
             }

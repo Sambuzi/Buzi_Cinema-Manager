@@ -140,4 +140,34 @@ public class UserController {
             stmt.executeUpdate();
         }
     }
+/**
+ * Blocks a user in the database.
+ *
+ * @param userId the ID of the user to be blocked
+ * @throws SQLException if any SQL error occurs
+ */
+public void blockUser(int userId) throws SQLException {
+    String query = "UPDATE users SET user_type = 'blocked' WHERE id = ?";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, userId);
+        stmt.executeUpdate();
+    }
+}
+
+/**
+ * Unblocks a user in the database.
+ *
+ * @param userId the ID of the user to be unblocked
+ * @throws SQLException if any SQL error occurs
+ */
+public void unblockUser(int userId) throws SQLException {
+    String query = "UPDATE users SET user_type = 'User' WHERE id = ?";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, userId);
+        stmt.executeUpdate();
+    }
+}
+
 }

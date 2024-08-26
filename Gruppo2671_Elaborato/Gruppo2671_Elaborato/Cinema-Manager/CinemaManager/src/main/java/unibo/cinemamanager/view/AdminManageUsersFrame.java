@@ -34,6 +34,8 @@ public class AdminManageUsersFrame extends JFrame {
     private JButton deleteButton;
     private JButton refreshButton;
     private JButton backButton;
+    private JButton blockButton;
+    private JButton unblockButton;
     private AdminMainFrame adminMainFrame;
 
     /**
@@ -51,7 +53,7 @@ public class AdminManageUsersFrame extends JFrame {
         setLayout(new BorderLayout());
 
         String[] columnNames = {"ID", "First Name", "Last Name", "Email", "Preferred Genres",
-                "Priority Level", "User Type"};
+                "Priority Level", "User Type", "Status"};
         tableModel = new DefaultTableModel(columnNames, 0);
         usersTable = new JTable(tableModel);
         loadUsers();
@@ -64,11 +66,15 @@ public class AdminManageUsersFrame extends JFrame {
         deleteButton = new JButton("Delete");
         refreshButton = new JButton("Refresh");
         backButton = new JButton("Back");
+        blockButton = new JButton("Block");
+        unblockButton = new JButton("Unblock");
 
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
         buttonPanel.add(backButton);
+        buttonPanel.add(blockButton);
+        buttonPanel.add(unblockButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -100,6 +106,20 @@ public class AdminManageUsersFrame extends JFrame {
                 adminMainFrame.setVisible(true);
             }
         });
+
+        blockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                blockUser();
+            }
+        });
+
+        unblockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                unblockUser();
+            }
+        });
     }
 
     private void loadUsers() {
@@ -115,7 +135,8 @@ public class AdminManageUsersFrame extends JFrame {
                         user.getEmail(),
                         user.getPreferredGenres(),
                         user.getPriorityLevel(),
-                        user.getUserType()
+                        user.getUserType(),
+                        user.isBlocked() ? "Blocked" : "Active"
                 };
                 tableModel.addRow(rowData);
             }
@@ -205,6 +226,68 @@ public class AdminManageUsersFrame extends JFrame {
                 loadUsers();
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Error deleting user: " + e.getMessage(), 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void blockUser() {
+        int selectedRow = usersTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a user to block.", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String userType = (String) tableModel.getValueAt(selectedRow, USER_TYPE_INDEX);
+        if ("Admin".equals(userType)) {
+            JOptionPane.showMessageDialog(this, "Cannot block an admin user.", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int userId = (int) tableModel.getValueAt(selectedRow, 0);
+
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to block this user?", 
+                "Block User", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (result == JOptionPane.YES_OPTION) {
+            UserController userController = new UserController();
+            try {
+                userController.blockUser(userId);
+                loadUsers();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error blocking user: " + e.getMessage(), 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void unblockUser() {
+        int selectedRow = usersTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a user to unblock.", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String status = (String) tableModel.getValueAt(selectedRow, 7);
+        if (!"Blocked".equals(status)) {
+            JOptionPane.showMessageDialog(this, "Selected user is not blocked.", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int userId = (int) tableModel.getValueAt(selectedRow, 0);
+
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to unblock this user?", 
+                "Unblock User", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (result == JOptionPane.YES_OPTION) {
+            UserController userController = new UserController();
+            try {
+                userController.unblockUser(userId);
+                loadUsers();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error unblocking user: " + e.getMessage(), 
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

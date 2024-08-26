@@ -178,4 +178,113 @@ public final class ReviewController {
         }
         return reviews;
     }
+
+    //dammi i migliori film recensiti
+    public List<Review> getBestReviewedMovies() throws SQLException {
+        List<Review> reviews = new ArrayList<>();
+        String query = "SELECT r.movie_id, m.title as movie_title, AVG(r.rating) as avg_rating "
+                + "FROM reviews r "
+                + "JOIN movies m ON r.movie_id = m.id "
+                + "GROUP BY r.movie_id, m.title "
+                + "ORDER BY avg_rating DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Review review = new Review();
+                review.setMovieId(rs.getInt("movie_id"));
+                review.setMovieTitle(rs.getString("movie_title"));
+                review.setRating(rs.getInt("avg_rating"));
+                reviews.add(review);
+            }
+        }
+        return reviews;
+    }
+
+    /**
+     * Retrieves movies with an average rating above 4.0.
+     *
+     * @return a list of reviews for movies with average rating above 4.0
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Review> getMoviesWithPositiveReviews() {
+        List<Review> reviews = new ArrayList<>();
+        String query = "SELECT r.movie_id, m.title as movie_title, AVG(r.rating) as avg_rating "
+                + "FROM reviews r "
+                + "JOIN movies m ON r.movie_id = m.id "
+                + "GROUP BY r.movie_id, m.title "
+                + "HAVING avg_rating >= 4.0 "
+                + "ORDER BY avg_rating DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Review review = new Review();
+                review.setMovieId(rs.getInt("movie_id"));
+                review.setMovieTitle(rs.getString("movie_title"));
+                review.setRating(rs.getInt("avg_rating"));
+                reviews.add(review);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reviews;
+    }
+
+    /**
+     * Retrieves movies with an average rating above 3.0.
+     *
+     * @return a list of reviews for movies with average rating above 3.0
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Review> getMoviesWithReviewsAboveThree() throws SQLException {
+        List<Review> reviews = new ArrayList<>();
+        String query = "SELECT r.movie_id, m.title as movie_title, AVG(r.rating) as avg_rating "
+                + "FROM reviews r "
+                + "JOIN movies m ON r.movie_id = m.id "
+                + "GROUP BY r.movie_id, m.title "
+                + "HAVING avg_rating > 3.0 "
+                + "ORDER BY avg_rating DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Review review = new Review();
+                review.setMovieId(rs.getInt("movie_id"));
+                review.setMovieTitle(rs.getString("movie_title"));
+                review.setRating(rs.getInt("avg_rating"));
+                reviews.add(review);
+            }
+        }
+        return reviews;
+    }
+
+    /**
+     * Retrieves movies with an average rating below 3.0.
+     *
+     * @return a list of reviews for movies with average rating below 3.0
+     * @throws SQLException if a database access error occurs
+     */
+    public List<Review> getMoviesWithReviewsBelowThree() throws SQLException {
+        List<Review> reviews = new ArrayList<>();
+        String query = "SELECT r.movie_id, m.title as movie_title, AVG(r.rating) as avg_rating "
+                + "FROM reviews r "
+                + "JOIN movies m ON r.movie_id = m.id "
+                + "GROUP BY r.movie_id, m.title "
+                + "HAVING avg_rating < 3.0 "
+                + "ORDER BY avg_rating DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                Review review = new Review();
+                review.setMovieId(rs.getInt("movie_id"));
+                review.setMovieTitle(rs.getString("movie_title"));
+                review.setRating(rs.getInt("avg_rating"));
+                reviews.add(review);
+            }
+        }
+        return reviews;
+}
+
 }

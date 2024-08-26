@@ -119,4 +119,8 @@ public final class Movie {
     public void setDuration(final int duration) {
         this.duration = duration;
     }
+
+    public boolean isBestReviewed() {
+        return false;
+    }
 }

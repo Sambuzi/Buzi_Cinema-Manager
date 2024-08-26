@@ -1,9 +1,12 @@
 package unibo.cinemamanager.view;
 
 import unibo.cinemamanager.controller.MovieController;
+import unibo.cinemamanager.controller.ReviewController;
 import unibo.cinemamanager.Model.Movie;
+import unibo.cinemamanager.Model.Review;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,6 +45,7 @@ public class MoviesFrame extends JFrame {
     private JTable moviesTable;
     private DefaultTableModel tableModel;
     private JButton backButton;
+    private JComboBox<String> reviewFilterComboBox; // ComboBox for filter
     private final UserMainFrame userMainFrame;
 
     /**
@@ -75,6 +79,13 @@ public class MoviesFrame extends JFrame {
         backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.PLAIN, BUTTON_FONT_SIZE));
         toolBar.add(backButton);
+
+        // ComboBox for review filter with three options
+        reviewFilterComboBox = new JComboBox<>(new String[]{"All Movies", "Movies with Review > 3", "Movies with Review < 3"});
+        reviewFilterComboBox.setFont(new Font("Arial", Font.PLAIN, BUTTON_FONT_SIZE));
+        toolBar.add(new JLabel("Filter by Review:"));
+        toolBar.add(reviewFilterComboBox);
+
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
         // Colonne della tabella
@@ -97,7 +108,7 @@ public class MoviesFrame extends JFrame {
         header.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // Recupera i dati dei film dal database e popolano la tabella
-        loadMovies();
+        loadMovies("All Movies"); // Initially load all movies
 
         JScrollPane scrollPane = new JScrollPane(moviesTable);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -122,15 +133,47 @@ public class MoviesFrame extends JFrame {
                 userMainFrame.setVisible(true);
             }
         });
+
+        // Action listener for the filter ComboBox
+        reviewFilterComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                String selectedFilter = (String) reviewFilterComboBox.getSelectedItem();
+                loadMovies(selectedFilter); // Load movies based on the selected filter
+                if ("Movies with Review > 3".equals(selectedFilter)) {
+                    statusLabel.setText("Showing movies with reviews greater than 3.");
+                } else if ("Movies with Review < 3".equals(selectedFilter)) {
+                    statusLabel.setText("Showing movies with reviews less than 3.");
+                } else {
+                    statusLabel.setText("Showing all movies.");
+                }
+            }
+        });
     }
 
     /**
-     * Loads movie data from the database and populates the table.
+     * Loads movie data from the database and populates the table based on the selected filter.
+     *
+     * @param filterType the type of filter to apply ("All Movies", "Movies with Review > 3", "Movies with Review < 3")
      */
-    private void loadMovies() {
+    private void loadMovies(String filterType) {
         MovieController movieController = new MovieController();
+        ReviewController reviewController = new ReviewController();
         try {
-            List<Movie> movies = movieController.getAllMovies();
+            List<Movie> movies;
+            if ("Movies with Review > 3".equals(filterType)) {
+                // Get movies with an average review score above 3
+                List<Review> reviews = reviewController.getMoviesWithReviewsAboveThree();
+                movies = movieController.getMoviesByIds(reviews.stream().map(Review::getMovieId).toList());
+            } else if ("Movies with Review < 3".equals(filterType)) {
+                // Get movies with an average review score below 3
+                List<Review> reviews = reviewController.getMoviesWithReviewsBelowThree();
+                movies = movieController.getMoviesByIds(reviews.stream().map(Review::getMovieId).toList());
+            } else {
+                // Get all movies
+                movies = movieController.getAllMovies();
+            }
+
             tableModel.setRowCount(0); // Clear existing data
             for (Movie movie : movies) {
                 Object[] rowData = {

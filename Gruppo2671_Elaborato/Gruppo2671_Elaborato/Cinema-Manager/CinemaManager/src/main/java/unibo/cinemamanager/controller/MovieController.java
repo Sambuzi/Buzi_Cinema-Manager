@@ -215,4 +215,37 @@ public final class MovieController {
         }
         return movies;
     }
+
+    public List<Movie> getMoviesByIds(List<Integer> list) {
+        List<Movie> movies = new ArrayList<>();
+        String query = "SELECT * FROM movies WHERE id IN (";
+        for (int i = 0; i < list.size(); i++) {
+            query += "?";
+            if (i < list.size() - 1) {
+                query += ", ";
+            }
+        }
+        query += ")";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            for (int i = 0; i < list.size(); i++) {
+                stmt.setInt(i + 1, list.get(i));
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Movie movie = new Movie();
+                    movie.setId(rs.getInt("id"));
+                    movie.setTitle(rs.getString("title"));
+                    movie.setDescription(rs.getString("description"));
+                    movie.setReleaseDate(rs.getString("release_date"));
+                    movie.setGenre(rs.getString("genre"));
+                    movie.setDuration(rs.getInt("duration"));
+                    movies.add(movie);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return movies;
+    }
 }

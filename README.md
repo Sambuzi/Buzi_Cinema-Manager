@@ -1,27 +1,71 @@
-Sistema di Gestione di Proiezioni Cinematografiche.
+# 🎬 Sistema di Gestione di Proiezioni Cinematografiche
 
-Obiettivo del Progetto L’obiettivo del progetto è realizzare un sistema di supporto per un sito che funge da intermediario nella gestione delle proiezioni cinematografiche in un cinema. Il sistema permetterà agli utenti di registrarsi, visualizzare i film in programmazione, prenotare posti per le proiezioni e lasciare recensioni sui film e sulle proiezioni.
+## 📌 Obiettivo del Progetto
+Il progetto ha come obiettivo la realizzazione di un sistema web per la **gestione delle proiezioni cinematografiche**.  
+La piattaforma funge da **intermediario tra il cinema e gli utenti**, consentendo di:
+- Registrarsi e gestire il proprio profilo;
+- Consultare i film in programmazione;
+- Prenotare posti per le proiezioni;
+- Lasciare recensioni sui film e sulle proiezioni.
 
-Descrizione del Progetto:
+---
 
-Registrazione e Gestione degli Utenti
+## 🧩 Descrizione del Sistema
 
-Registrazione Utente: Gli utenti possono registrarsi al sito inserendo le proprie informazioni (nome, cognome, email, password).
+### 👤 Gestione Utenti
+- **Registrazione Utente:**  
+  Gli utenti possono registrarsi inserendo nome, cognome, email e password.  
+- **Gestione del Profilo:**  
+  Ogni utente può modificare le proprie informazioni personali e aggiungere le **categorie di film preferite**, con un livello di priorità da 1 a 5.  
+- **Visualizzazione Profilo:**  
+  È possibile consultare e aggiornare in ogni momento il proprio profilo e le preferenze di visione.
 
-Gestione del Profilo: Ogni utente può aggiornare il proprio profilo aggiungendo le categorie di film di maggiore interesse, assegnando un livello di priorità da 1 a 5.
+---
 
-Visualizzazione del Profilo: Gli utenti possono visualizzare e modificare il proprio profilo e le proprie preferenze.
+### 🎥 Gestione Film
+- **Creazione Film (solo amministratori):**  
+  Gli amministratori possono aggiungere nuovi film, specificando:
+  - Titolo  
+  - Descrizione  
+  - Data di rilascio  
+  - Genere  
+  - Durata  
+- **Informazioni sui Film:**  
+  Ogni film presenta una scheda dettagliata con trama, attori principali, genere, durata e data di uscita.  
+- **Elenco Film:**  
+  Gli utenti possono visualizzare tutti i film attualmente in programmazione.
 
-Gestione dei Film
+---
 
-Creazione di Film: Gli amministratori possono creare nuovi film da proiettare, specificando titolo, descrizione, data di rilascio, genere e durata.
+### 🗓️ Gestione Proiezioni
+- **Creazione Proiezioni (solo amministratori):**  
+  È possibile creare proiezioni per i film, indicando data, orario e sala.  
+- **Visualizzazione Proiezioni:**  
+  Gli utenti possono consultare la lista delle proiezioni disponibili, con i relativi dettagli (film, orario, sala, posti disponibili).
 
-Informazioni sui Film: Per ciascun film, il sito mostrerà informazioni dettagliate come trama, attori principali, genere, durata e data di rilascio.
+---
 
-Elenco dei Film: Gli utenti possono visualizzare l'elenco dei film in programmazione.
+### 🎟️ Prenotazioni e Recensioni
+- **Prenotazione Posti:**  
+  Gli utenti registrati possono prenotare i posti per le proiezioni desiderate.  
+- **Recensioni:**  
+  Dopo aver partecipato a una proiezione, gli utenti possono lasciare una recensione sia sul film che sull’esperienza di visione.
 
-Gestione delle Proiezioni Creazione di Proiezioni: Gli amministratori possono creare proiezioni per i film, specificando la data, l’orario e la sala della proiezione.
+---
 
-Visualizzazione delle Proiezioni: Gli utenti possono visualizzare la lista delle proiezioni disponibili con i dettagli delle sessioni.
+## ⚙️ Funzionalità Principali
+| Funzionalità | Descrizione |
+|---------------|-------------|
+| 🔐 **Registrazione Utente** | Creazione account e gestione delle preferenze personali |
+| 🎬 **Creazione Film** | Inserimento di nuovi film con dettagli completi (solo admin) |
+| 🗓️ **Creazione Proiezioni** | Definizione di data, orario e sala (solo admin) |
+| 🎟️ **Prenotazione Posti** | Selezione e prenotazione dei posti per una proiezione |
+| 📝 **Inserimento Recensioni** | Valutazione di film e proiezioni dopo la visione |
 
-Funzionalità Offerte dalla Piattaforma Registrare un nuovo utente: Inserendo le informazioni personali e le preferenze di visione. Creare Film: Gli amministratori possono aggiungere nuovi film con dettagli completi. Creare Proiezioni: Specificando data, orario e sala per ogni film. Prenotare Posti: Gli utenti possono prenotare posti per le proiezioni desiderate. Inserire Recensioni: Gli utenti possono recensire film e proiezioni dopo la partecipazione.
+---
+
+
+## 💻 Installazione ed Esecuzione
+1. Clona il repository:
+   ```bash
+   git clone https://github.com/<tuo-username>/<nome-repo>.git
